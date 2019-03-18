@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class DaoModule extends Model
 {
+    protected $table = 'daomodule';
     protected $fillable = [
-        'id', 'name', 'type', 'height', 'width', 'createTime','width', 'isBan', 'remark',
+        'id', 'name', 'type', 'height', 'width', 'createTime', 'updateTime', 'isBan', 'remark',
     ];
+    public $timestamps = false;
 
     /**
      * 返回 published_at 字段的日期部分
@@ -34,7 +36,7 @@ class DaoModule extends Model
      */
     public function url(Tag $tag = null)
     {
-        $url = url('blog/' . $this->id);
+        $url = url('blog/daoModule/' . $this->id);
 
         return $url;
     }
@@ -48,7 +50,7 @@ class DaoModule extends Model
     public function newerPost(Tag $tag = null)
     {
         $query =
-            static::where('createTime', '>', $this->published_at)
+            static::where('createTime', '>', $this->createTime)
                 ->where('createTime', '<=', Carbon::now())
                 ->where('isBan', 0)
                 ->orderBy('createTime', 'asc');
@@ -65,7 +67,7 @@ class DaoModule extends Model
     public function olderPost(Tag $tag = null)
     {
         $query =
-            static::where('createTime', '<', $this->published_at)
+            static::where('createTime', '<', $this->createTime)
                 ->where('isBan', 0)
                 ->orderBy('createTime', 'desc');
 
