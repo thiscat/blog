@@ -24,7 +24,7 @@ Route::get('/blog/{slug}', 'BlogController@showPost')->name('blog.detail');
 
 // 后台路由
 Route::get('/admin', function () {
-    return redirect('/admin/post');
+    return redirect('/admin/daoModule');
 });
 Route::middleware('auth')->namespace('Admin')->group(function () {
     Route::resource('admin/post', 'PostController', ['except' => 'show']);

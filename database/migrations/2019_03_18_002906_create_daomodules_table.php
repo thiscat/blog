@@ -17,14 +17,12 @@ class CreateDaomodulesTable extends Migration
             $table->increments('id');
             $table->string('name', 100)->default('');
             $table->string('type', 10)->default('');
-            $table->decimal('height', 8, 2)->default(0);
+            $table->decimal('height', 8, 2)->default(0.0);
             $table->decimal('width', 8, 2)->default(0);
-            $table->timestamp('createTime');
-            $table->timestamp('updateTime');
+            $table->integer('createTime')->default(0);
+            $table->integer('updateTime')->default(0);
             $table->smallInteger('isBan')->default(0);
             $table->string('remark', 200)->default('');
-            $table->engine = 'InnoDB';
-            $table->charset = 'utf8';
         });
     }
 

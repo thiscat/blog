@@ -15,7 +15,7 @@ class CreatePostTagPivot extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('tag')->unique();
+            $table->string('tag', 50)->unique();
             $table->string('title');
             $table->string('subtitle');
             $table->string('page_image');
