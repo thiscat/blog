@@ -14,6 +14,12 @@
                 <h3>模型 <small>» 列表</small></h3>
             </div>
             <div class="col-md-6 text-right">
+                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#modal-file-upload">
+                    <i class="fa fa-upload"></i> 导入模型
+                </button>
+                <a href="/admin/excel/export" class="btn btn-success btn-md">
+                    <i class="fa fa-plus-circle"></i> 导出模型
+                </a>
                 <a href="/admin/daoModule/create" class="btn btn-success btn-md">
                     <i class="fa fa-plus-circle"></i> 创建新模型
                 </a>
@@ -55,10 +61,10 @@
                     @foreach ($daoModule as $module)
                         <tr>
                             <td data-order="{{ $module->createTime }}">
-                                {{ date('Y-m-d', $module->createTime) }}
+                                {{ date('Y-m-d H:i:s', $module->createTime) }}
                             </td>
                             <td data-order="{{ $module->updateTime }}">
-                                {{ $module->updateTime > 0 ? date('Y-m-d', $module->updateTime) : '' }}
+                                {{ $module->updateTime > 0 ? date('Y-m-d H:i:s', $module->updateTime) : '' }}
                             </td>
                             <td>{{ $module->name }}</td>
                             <td>{{ $module->type }}</td>
@@ -81,6 +87,8 @@
         </div>
 
     </div>
+
+    @include('admin.daoModule._modals')
 @stop
 
 @section('scripts')

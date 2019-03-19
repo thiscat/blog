@@ -35,6 +35,8 @@ Route::middleware('auth')->namespace('Admin')->group(function () {
     Route::delete('admin/upload/file', 'UploadController@deleteFile');
     Route::post('admin/upload/folder', 'UploadController@createFolder');
     Route::delete('admin/upload/folder', 'UploadController@deleteFolder');
+    Route::get('admin/excel/export','ExcelController@export');
+    Route::post('admin/excel/import','ExcelController@import');
 });
 
 // 登录退出

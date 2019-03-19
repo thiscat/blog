@@ -116,8 +116,11 @@ class DaoModuleController extends Controller
      */
     public function destroy($id)
     {
+//        $daoModule = DaoModule::findOrFail($id);
+//        $daoModule->delete();
         $daoModule = DaoModule::findOrFail($id);
-        $daoModule->delete();
+        $daoModule->fill(['isBan' => 1]);
+        $daoModule->save();
 
         return redirect()
             ->route('daoModule.index')

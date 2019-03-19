@@ -73,4 +73,13 @@ class DaoModule extends Model
 
         return $query->first();
     }
+
+    public static function all($columns = ['*'])
+    {
+        $query =
+            static::where('isBan', 0)
+                ->orderBy('createTime', 'desc');
+
+        return $query->get();
+    }
 }
