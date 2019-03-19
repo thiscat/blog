@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Requests\DaoModuleCreateRequest;
 use App\Http\Requests\DaoModuleUpdateRequest;
 use App\Jobs\PostFormFields;
-use App\Models\Post;
-use App\Models\Tag;
+use App\Models\DaoModule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -15,16 +14,14 @@ use Illuminate\Http\Response;
 class DaoModuleController extends Controller
 {
     protected $fieldList = [
-        'title' => '',
-        'subtitle' => '',
-        'page_image' => '',
-        'content' => '',
-        'meta_description' => '',
-        'is_draft' => "0",
-        'publish_date' => '',
-        'publish_time' => '',
-        'layout' => 'blog.layouts.post',
-        'tags' => [],
+        'name' => '',
+        'type' => '',
+        'height' => '',
+        'width' => '',
+        'createTime' => '',
+        'updateTime' => "0",
+        'isBan' => '',
+        'remark' => '',
     ];
 
     /**
@@ -32,7 +29,7 @@ class DaoModuleController extends Controller
      */
     public function index()
     {
-        return view('admin.post.index', ['posts' => Post::all()]);
+        return view('admin.daoModule.index', ['daoModule' => DaoModule::all()]);
     }
 
     /**
@@ -43,19 +40,15 @@ class DaoModuleController extends Controller
         $fields = $this->fieldList;
 
         $when = Carbon::now()->addHour();
-        $fields['publish_date'] = $when->format('Y-m-d');
-        $fields['publish_time'] = $when->format('g:i A');
+        $fields['createTime'] = $when->format('Y-m-d');
+        $fields['updateTime'] = $when->format('Y-m-d');
 
         foreach ($fields as $fieldName => $fieldValue) {
             $fields[$fieldName] = old($fieldName, $fieldValue);
         }
+        $data = $fields;
 
-        $data = array_merge(
-            $fields,
-            ['allTags' => Tag::all()->pluck('tag')->all()]
-        );
-
-        return view('admin.post.create', $data);
+        return view('admin.daoModule.create', $data);
     }
 
     /**
@@ -63,13 +56,12 @@ class DaoModuleController extends Controller
      *
      * @param PostCreateRequest $request
      */
-    public function store(PostCreateRequest $request)
+    public function store(DaoModuleCreateRequest $request)
     {
-        $post = Post::create($request->postFillData());
-        $post->syncTags($request->get('tags', []));
+        $daoModule = DaoModule::create($request->postFillData());
 
         return redirect()
-            ->route('post.index')
+            ->route('daoModule.index')
             ->with('success', '新文章创建成功.');
     }
 
@@ -87,12 +79,9 @@ class DaoModuleController extends Controller
             $fields[$fieldName] = old($fieldName, $fieldValue);
         }
 
-        $data = array_merge(
-            $fields,
-            ['allTags' => Tag::all()->pluck('tag')->all()]
-        );
+        $data = $fields;
 
-        return view('admin.post.edit', $data);
+        return view('admin.daoModule.edit', $data);
     }
 
     /**
@@ -102,12 +91,11 @@ class DaoModuleController extends Controller
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(PostUpdateRequest $request, $id)
+    public function update(DaoModuleUpdateRequest $request, $id)
     {
-        $post = Post::findOrFail($id);
-        $post->fill($request->postFillData());
-        $post->save();
-        $post->syncTags($request->get('tags', []));
+        $daoModule = DaoModule::findOrFail($id);
+        $daoModule->fill($request->postFillData());
+        $daoModule->save();
 
         if ($request->action === 'continue') {
             return redirect()
@@ -116,7 +104,7 @@ class DaoModuleController extends Controller
         }
 
         return redirect()
-            ->route('post.index')
+            ->route('daoModule.index')
             ->with('success', '文章已保存.');
     }
 
@@ -128,12 +116,11 @@ class DaoModuleController extends Controller
      */
     public function destroy($id)
     {
-        $post = Post::findOrFail($id);
-        $post->tags()->detach();
-        $post->delete();
+        $daoModule = DaoModule::findOrFail($id);
+        $daoModule->delete();
 
         return redirect()
-            ->route('post.index')
+            ->route('daoModule.index')
             ->with('success', '文章已删除.');
     }
 
@@ -146,16 +133,14 @@ class DaoModuleController extends Controller
      */
     private function fieldsFromModel($id, array $fields)
     {
-        $post = Post::findOrFail($id);
+        $daoModule = DaoModule::findOrFail($id);
 
-        $fieldNames = array_keys(array_except($fields, ['tags']));
+        $fieldNames = array_keys($fields);
 
         $fields = ['id' => $id];
         foreach ($fieldNames as $field) {
-            $fields[$field] = $post->{$field};
+            $fields[$field] = $daoModule->{$field};
         }
-
-        $fields['tags'] = $post->tags->pluck('tag')->all();
 
         return $fields;
     }

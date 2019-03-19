@@ -40,10 +40,10 @@ class DaoModuleCreateRequest extends FormRequest
             'name' => $this->name,
             'type' => $this->type,
             'height' => $this->height,
-            'width' => $this->height,
+            'width' => $this->width,
             'createTime' => time(),
             'updateTime' => time(),
-            'isBan' => $this->isBan,
+            'isBan' => $this->isBan ? $this->isBan : 0,
             'remark' => $this->remark,
         ];
     }
