@@ -6,6 +6,9 @@
         padding: 3px;
         box-sizing: border-box;
     }
+    #rangeSearch, #rangeSearch td {
+        border: unset;
+    }
 </style>
 @section('content')
     <div class="container">
@@ -31,9 +34,21 @@
 
                 @include('admin.partials.errors')
                 @include('admin.partials.success')
-
                 <table id="posts-table" class="table table-striped table-bordered">
                     <thead>
+                    <tr id="rangeSearch">
+                        <td>最小长度:</td>
+                        <td><input type="text" id="minHeight" name="minHeight"></td>
+
+                        <td>最大长度:</td>
+                        <td><input type="text" id="maxHeight" name="maxHeight"></td>
+
+                        <td>最小宽度:</td>
+                        <td><input type="text" id="minWidth" name="minWidth"></td>
+
+                        <td>最大宽度:</td>
+                        <td><input type="text" id="maxWidth" name="maxWidth"></td>
+                    </tr>
                     <tr>
                         <th>创建时间</th>
                         <th>更新时间</th>
@@ -94,6 +109,39 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var min = parseInt( $('#minHeight').val(), 10 );
+                    var max = parseInt( $('#maxHeight').val(), 10 );
+                    var age = parseFloat( data[4] ) || 0; // use data for the age column
+
+                    if ( ( isNaN( min ) && isNaN( max ) ) ||
+                        ( isNaN( min ) && age <= max ) ||
+                        ( min <= age   && isNaN( max ) ) ||
+                        ( min <= age   && age <= max ) )
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            $.fn.dataTable.ext.search.push(
+                function( settings, data, dataIndex ) {
+                    var min = parseInt( $('#minWidth').val(), 10 );
+                    var max = parseInt( $('#maxWidth').val(), 10 );
+                    var age = parseFloat( data[5] ) || 0; // use data for the age column
+
+                    if ( ( isNaN( min ) && isNaN( max ) ) ||
+                        ( isNaN( min ) && age <= max ) ||
+                        ( min <= age   && isNaN( max ) ) ||
+                        ( min <= age   && age <= max ) )
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
             // Setup - add a text input to each footer cell
             $('#posts-table tfoot th').each( function () {
                 var title = $('#posts-table thead th').eq( $(this).index() ).text();
@@ -101,7 +149,9 @@
             } );
 
             // DataTable
-            var table = $('#posts-table').DataTable();
+            var table = $('#posts-table').DataTable({
+                order: [[0, "desc"]]
+            });
 
             // Apply the search
             table.columns().eq( 0 ).each( function ( colIdx ) {
@@ -111,6 +161,10 @@
                         .search( this.value )
                         .draw();
                 } );
+            } );
+
+            $('#minHeight, #maxHeight, #minWidth, #maxWidth').keyup( function() {
+                table.draw();
             } );
         } );
     </script>
